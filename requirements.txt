@@ -1,0 +1,9 @@
+playwright
+beautifulsoup4
+markdownify
+numpy
+tqdm
+faiss-cpu
+transformers
+sentence-transformers
+torch 
