@@ -6,16 +6,16 @@ from urllib.parse import urljoin
 from markdownify import markdownify as md
 from playwright.sync_api import sync_playwright
 
-BASE_URL = "https://tds.s-anand.net/#/2025-01"
+BASE_URL = "https://tds.s-anand.net/#/2025-01/"
 BASE_ORIGIN = "https://tds.s-anand.net"
-OUTPUT_DIR = "markdown_files"
+OUTPUT_DIR = "tds_pages_md"
 METADATA_FILE = "metadata.json"
 
 visited = set()
 metadata = []
 
 def sanitize_filename(title):
-    return re.sub(r'[\/*?:"<>|]', "_", title).strip().replace(" ", "_")
+    return re.sub(r'[\\/*?:"<>|]', "_", title).strip().replace(" ", "_")
 
 def extract_all_internal_links(page):
     links = page.eval_on_selector_all("a[href]", "els => els.map(el => el.href)")
@@ -39,7 +39,7 @@ def crawl_page(page, url):
         page.wait_for_timeout(1000)
         html = wait_for_article_and_get_html(page)
     except Exception as e:
-        print(f"❌ Error loading page: {url}{e}")
+        print(f"❌ Error loading page: {url}\n{e}")
         return
 
     # Extract title and save markdown
@@ -49,19 +49,19 @@ def crawl_page(page, url):
 
     markdown = md(html)
     with open(filepath, "w", encoding="utf-8") as f:
-            f.write("---\n")
-            f.write(f"title: \"{title}\"\n")
-            f.write(f"original_url: \"{url}\"\n")
-            f.write(f"downloaded_at: \"{datetime.now().isoformat()}\"\n")
-            f.write("---\n\n")
-            f.write(markdown)
+        f.write(f"---\n")
+        f.write(f"title: \"{title}\"\n")
+        f.write(f"original_url: \"{url}\"\n")
+        f.write(f"downloaded_at: \"{datetime.now().isoformat()}\"\n")
+        f.write(f"---\n\n")
+        f.write(markdown)
 
     metadata.append({
-            "title": title,
-            "filename": f"{filename}.md",
-            "original_url": url,
-            "downloaded_at": datetime.now().isoformat()
-        })
+        "title": title,
+        "filename": f"{filename}.md",
+        "original_url": url,
+        "downloaded_at": datetime.now().isoformat()
+    })
 
     # Recursively crawl all links found on the page (not just main content)
     links = extract_all_internal_links(page)
@@ -82,9 +82,8 @@ def main():
         with open(METADATA_FILE, "w", encoding="utf-8") as f:
             json.dump(metadata, f, indent=2)
 
-        print(f"✅ Completed. {len(metadata)} pages saved.")
+        print(f"\n✅ Completed. {len(metadata)} pages saved.")
         browser.close()
 
 if __name__ == "__main__":
     main()
-

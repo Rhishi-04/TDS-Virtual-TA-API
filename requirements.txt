@@ -6,4 +6,11 @@ tqdm
 faiss-cpu
 transformers
 sentence-transformers
-torch 
+torch
+fastapi
+uvicorn
+pillow
+pytesseract
+pydantic
+python-dateutil
+markdownify
