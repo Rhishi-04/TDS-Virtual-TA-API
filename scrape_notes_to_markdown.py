@@ -9,7 +9,7 @@ from playwright.sync_api import sync_playwright
 BASE_URL = "https://tds.s-anand.net/#/2025-01/"
 BASE_ORIGIN = "https://tds.s-anand.net"
 OUTPUT_DIR = "tds_pages_md"
-METADATA_FILE = "metadata.json"
+METADATA_FILE = "data/metadata.json"
 
 visited = set()
 metadata = []
