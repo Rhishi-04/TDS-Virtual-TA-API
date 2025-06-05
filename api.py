@@ -221,3 +221,5 @@ async def answer_question(req: QueryRequest):
         confidence=confidence,
         timestamp=start_time.isoformat()
     )
+
+handler = app
