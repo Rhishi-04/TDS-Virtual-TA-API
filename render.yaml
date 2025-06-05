@@ -1,7 +1,0 @@
-services:
-  - type: web
-    name: tds-virtual-ta
-    env: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: ./start.sh
-    plan: free
