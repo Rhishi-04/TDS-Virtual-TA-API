@@ -14,3 +14,4 @@ pytesseract
 pydantic
 python-dateutil
 markdownify
+openai
