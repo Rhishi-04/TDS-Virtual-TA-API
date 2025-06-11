@@ -24,15 +24,15 @@ def parse_date(date_str):
         return datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%SZ")
 
 def login_and_save_auth(playwright):
-    print("🔐 No auth found. Launching browser for manual login...")
+    print(" No auth found. Launching browser for manual login...")
     browser = playwright.chromium.launch(headless=False)
     context = browser.new_context()
     page = context.new_page()
     page.goto(f"{BASE_URL}/login")
-    print("🌐 Please log in manually using Google. Then press ▶️ (Resume) in Playwright bar.")
+    print(" Please log in manually using Google. Then press ▶️ (Resume) in Playwright bar.")
     page.pause()
     context.storage_state(path=AUTH_STATE_FILE)
-    print("✅ Login state saved.")
+    print(" Login state saved.")
     browser.close()
 
 def is_authenticated(page):
@@ -56,7 +56,7 @@ def clean_post(post):
     }
 
 def scrape_posts(playwright):
-    print("🔍 Starting scrape using saved session...")
+    print(" Starting scrape using saved session...")
     browser = playwright.chromium.launch(headless=True)
     context = browser.new_context(storage_state=AUTH_STATE_FILE)
     page = context.new_page()
@@ -65,13 +65,13 @@ def scrape_posts(playwright):
     page_num = 0
     while True:
         paginated_url = f"{CATEGORY_JSON_URL}?page={page_num}"
-        print(f"📦 Fetching page {page_num}...")
+        print(f" Fetching page {page_num}...")
         try:
             page.goto(paginated_url)
             json_text = page.evaluate("document.querySelector('pre').innerText")
             data = json.loads(json_text)
         except Exception as e:
-            print(f"❌ Failed to fetch or parse page {page_num}: {e}")
+            print(f" Failed to fetch or parse page {page_num}: {e}")
             break
 
         topics = data.get("topic_list", {}).get("topics", [])
@@ -82,14 +82,14 @@ def scrape_posts(playwright):
         page_num += 1
         time.sleep(uniform(1.5, 3.0))
 
-    print(f"📄 Found {len(all_topics)} total topics across all pages")
+    print(f" Found {len(all_topics)} total topics across all pages")
 
     filtered_posts = []
     for topic in all_topics:
         try:
             created_at = parse_date(topic["created_at"])
         except Exception as e:
-            print(f"⚠️ Skipping topic with invalid date: {e}")
+            print(f" Skipping topic with invalid date: {e}")
             continue
 
         if DATE_FROM <= created_at <= DATE_TO:
@@ -99,7 +99,7 @@ def scrape_posts(playwright):
                 topic_json = page.evaluate("document.querySelector('pre').innerText")
                 topic_data = json.loads(topic_json)
             except Exception as e:
-                print(f"❌ Failed to fetch topic {topic['id']}: {e}")
+                print(f" Failed to fetch topic {topic['id']}: {e}")
                 continue
 
             posts = topic_data.get("post_stream", {}).get("posts", [])
@@ -137,7 +137,7 @@ def scrape_posts(playwright):
     with open(OUTPUT_FILE, "w") as f:
         json.dump(filtered_posts, f, indent=2)
 
-    print(f"✅ Scraped {len(filtered_posts)} posts between {DATE_FROM.date()} and {DATE_TO.date()}")
+    print(f" Scraped {len(filtered_posts)} posts between {DATE_FROM.date()} and {DATE_TO.date()}")
     browser.close()
 
 def main():
@@ -149,11 +149,11 @@ def main():
             context = browser.new_context(storage_state=AUTH_STATE_FILE)
             page = context.new_page()
             if not is_authenticated(page):
-                print("⚠️ Session invalid. Re-authenticating...")
+                print(" Session invalid. Re-authenticating...")
                 browser.close()
                 login_and_save_auth(p)
             else:
-                print("✅ Using existing authenticated session.")
+                print(" Using existing authenticated session.")
                 browser.close()
 
         scrape_posts(p)
