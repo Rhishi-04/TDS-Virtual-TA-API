@@ -29,7 +29,7 @@ def login_and_save_auth(playwright):
     context = browser.new_context()
     page = context.new_page()
     page.goto(f"{BASE_URL}/login")
-    print(" Please log in manually using Google. Then press ▶️ (Resume) in Playwright bar.")
+    print(" Please log in manually using Google. Then press (Resume) in Playwright bar.")
     page.pause()
     context.storage_state(path=AUTH_STATE_FILE)
     print(" Login state saved.")
